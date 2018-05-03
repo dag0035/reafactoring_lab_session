@@ -43,7 +43,7 @@ public class Network {
     Maps the names of workstations on the actual workstations.
     Used to initiate the requests for the network.
 	 */
-	private Hashtable workstations_;
+	private Hashtable<String, Node> workstations_;
 
 	/**
 Construct a <em>Network</em> suitable for holding #size Workstations.
@@ -53,7 +53,7 @@ Construct a <em>Network</em> suitable for holding #size Workstations.
 		assert size > 0;
 		initPtr_ = this;
 		firstNode_ = null;
-		workstations_ = new Hashtable(size, 1.0f);
+		workstations_ = new Hashtable<String, Node>(size, 1.0f);
 		assert isInitialized();
 		assert ! consistentNetwork();
 	}
@@ -124,10 +124,10 @@ A consistent token ring network
 	 */
 	public boolean consistentNetwork () {
 		assert isInitialized();
-		Enumeration iter;
+		Enumeration<Node> iter;
 		Node currentNode;
 		int printersFound = 0, workstationsFound = 0;
-		Hashtable encountered = new Hashtable(workstations_.size() * 2, 1.0f);
+		Hashtable<String, Node> encountered = new Hashtable<String, Node>(workstations_.size() * 2, 1.0f);
 
 		if (workstations_.isEmpty()) {return false;};
 		if (firstNode_ == null) {return false;};
