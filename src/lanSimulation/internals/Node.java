@@ -22,8 +22,6 @@ package lanSimulation.internals;
 import java.io.IOException;
 import java.io.Writer;
 
-import lanSimulation.Network;
-
 /**
 A <em>Node</em> represents a single Node in a Local Area Network (LAN).
 Several types of Nodes exist.
@@ -79,14 +77,14 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 		nextNode_ = nextNode;
 	}
 
-	public void writeReportNode(Writer report, Network network) throws IOException {
+	public void loggingNode(Writer report, String msg) throws IOException {
 		report.write("\tNode '");
 		report.write(name_);
-		report.write("' passes packet on.\n");
+		report.write("' " + msg + "\n");
 		report.flush();
 	}
 
-	public void printReport(Writer report, String author, String title) throws IOException {
+	public void logging(Writer report, String author, String title) throws IOException {
 		report.write("\tAccounting -- author = '");
 		report.write(author);
 		report.write("' -- title = '");
@@ -115,6 +113,10 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 			buf.append("(Unexpected)");;
 			break;
 		};
+	}
+
+	public Node getNext() {
+		return this.nextNode_;
 	}
 
 }
