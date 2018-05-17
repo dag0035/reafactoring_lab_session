@@ -78,10 +78,10 @@ public class Network {
 	public static Network DefaultExample() {
 		Network network = new Network(2);
 
-		Node wsFilip = new Node(Node.WORKSTATION, "Filip");
-		Node n1 = new Node(Node.NODE, "n1");
-		Node wsHans = new Node(Node.WORKSTATION, "Hans");
-		Node prAndy = new Node(Node.PRINTER, "Andy");
+		Node wsFilip = new Node(NodeType.WORKSTATION, "Filip");
+		Node n1 = new Node(NodeType.NODE, "n1");
+		Node wsHans = new Node(NodeType.WORKSTATION, "Hans");
+		Node prAndy = new Node(NodeType.PRINTER, "Andy");
 
 		wsFilip.nextNode_ = n1;
 		n1.nextNode_ = wsHans;
@@ -119,7 +119,7 @@ public class Network {
 		if (n == null) {
 			return false;
 		} else {
-			return n.type_ == Node.WORKSTATION;
+			return n.getType_() == NodeType.WORKSTATION;
 		}
 	};
 
@@ -151,7 +151,7 @@ public class Network {
 		iter = workstations_.elements();
 		while (iter.hasMoreElements()) {
 			currentNode = (Node) iter.nextElement();
-			if (currentNode.type_ != Node.WORKSTATION) {
+			if (currentNode.getType_() != NodeType.WORKSTATION) {
 				return false;
 			}
 
@@ -162,11 +162,11 @@ public class Network {
 		currentNode = firstNode_;
 		while (!encountered.containsKey(currentNode.name_)) {
 			encountered.put(currentNode.name_, currentNode);
-			if (currentNode.type_ == Node.WORKSTATION) {
+			if (currentNode.getType_() == NodeType.WORKSTATION) {
 				workstationsFound++;
 			}
 
-			if (currentNode.type_ == Node.PRINTER) {
+			if (currentNode.getType_() == NodeType.PRINTER) {
 				printersFound++;
 			}
 
@@ -386,18 +386,18 @@ public class Network {
 		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<network>");
 		do {
 			buf.append("\n\t");
-			switch (currentNode.type_) {
-			case Node.NODE:
+			switch (currentNode.getType_()) {
+			case NodeType.NODE:
 				buf.append("<node>");
 				buf.append(currentNode.name_);
 				buf.append("</node>");
 				break;
-			case Node.WORKSTATION:
+			case NodeType.WORKSTATION:
 				buf.append("<workstation>");
 				buf.append(currentNode.name_);
 				buf.append("</workstation>");
 				break;
-			case Node.PRINTER:
+			case NodeType.PRINTER:
 				buf.append("<printer>");
 				buf.append(currentNode.name_);
 				buf.append("</printer>");
@@ -418,7 +418,7 @@ public class Network {
 		String title = "Untitled";
 		int startPos = 0, endPos = 0;
 	
-		if (node.type_ == Node.PRINTER) {
+		if (node.getType_() == NodeType.PRINTER) {
 			try {
 				if (packet.message_.startsWith("!PS")) {
 					startPos = packet.message_.indexOf("author:");

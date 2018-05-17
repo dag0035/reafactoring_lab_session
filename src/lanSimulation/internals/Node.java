@@ -27,24 +27,10 @@ A <em>Node</em> represents a single Node in a Local Area Network (LAN).
 Several types of Nodes exist.
  */
 public class Node {
-	//enumeration constants specifying all legal node types
-	/**
-    A node with type NODE has only basic functionality.
-	 */
-	public static final byte NODE = 0;
-	/**
-    A node with type WORKSTATION may initiate requests on the LAN.
-	 */
-	public static final byte WORKSTATION = 1;
-	/**
-    A node with type PRINTER may accept packages to be printed.
-	 */
-	public static final byte PRINTER = 2;
-
 	/**
     Holds the type of the Node.
 	 */
-	public byte type_;
+	private byte type_;
 	/**
     Holds the name of the Node.
 	 */
@@ -60,8 +46,8 @@ Construct a <em>Node</em> with given #type and #name.
 <p><strong>Precondition:</strong> (type >= NODE) & (type <= PRINTER);</p>
 	 */
 	public Node(byte type, String name) {
-		assert (type >= NODE) & (type <= PRINTER);
-		type_ = type;
+		assert (type >= NodeType.NODE) & (type <= NodeType.PRINTER);
+		setType_(type);
 		name_ = name;
 		nextNode_ = null;
 	}
@@ -71,8 +57,8 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 <p><strong>Precondition:</strong> (type >= NODE) & (type <= PRINTER);</p>
 	 */
 	public Node(byte type, String name, Node nextNode) {
-		assert (type >= NODE) & (type <= PRINTER);
-		type_ = type;
+		assert (type >= NodeType.NODE) & (type <= NodeType.PRINTER);
+		setType_(type);
 		name_ = name;
 		nextNode_ = nextNode;
 	}
@@ -93,18 +79,18 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 	}
 
 	public void appendCase(StringBuffer buf) {
-		switch (type_) {
-		case Node.NODE:
+		switch (getType_()) {
+		case NodeType.NODE:
 			buf.append("Node ");
 			buf.append(name_);
 			buf.append(" [Node]");
 			break;
-		case Node.WORKSTATION:
+		case NodeType.WORKSTATION:
 			buf.append("Workstation ");
 			buf.append(name_);
 			buf.append(" [Workstation]");
 			break;
-		case Node.PRINTER:
+		case NodeType.PRINTER:
 			buf.append("Printer ");
 			buf.append(name_);
 			buf.append(" [Printer]");
@@ -117,6 +103,15 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 
 	public Node getNext() {
 		return this.nextNode_;
+	}
+
+	public byte getType_() {
+		return type_;
+	}
+
+	public void setType_(byte type) {
+		
+		this.type_ = NodeType.createNodeType(type);
 	}
 
 }
