@@ -22,6 +22,8 @@ package lanSimulation.internals;
 import java.io.IOException;
 import java.io.Writer;
 
+import lanSimulation.Network;
+
 /**
 A <em>Node</em> represents a single Node in a Local Area Network (LAN).
 Several types of Nodes exist.
@@ -78,27 +80,57 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 		report.write("'\n");
 	}
 
-	public void appendCase(StringBuffer buf) {
-		switch (getType_()) {
-		case NodeType.NODE:
-			buf.append("Node ");
-			buf.append(name_);
-			buf.append(" [Node]");
-			break;
-		case NodeType.WORKSTATION:
-			buf.append("Workstation ");
-			buf.append(name_);
-			buf.append(" [Workstation]");
-			break;
-		case NodeType.PRINTER:
-			buf.append("Printer ");
-			buf.append(name_);
-			buf.append(" [Printer]");
-			break;
-		default:
-			buf.append("(Unexpected)");;
-			break;
-		};
+	/**
+	 * Write a printable representation of #receiver on the given #buf.
+	 * <p>
+	 * <strong>Precondition:</strong> isInitialized();
+	 * </p>
+	 * 
+	 * @param network TODO
+	 * @param buf
+	 *            TODO
+	 */
+	public void printOn(Network network, StringBuffer buf) {
+		assert network.isInitialized();
+		Node currentNode = this;
+		do {
+			currentNode.appendElement(buf, currentNode);
+			buf.append(" -> ");
+			currentNode = currentNode.nextNode_;
+		} while (currentNode != this);
+		buf.append(" ... ");
+	}
+
+	protected void appendElement(StringBuffer buf, Node currentNode) {
+		buf.append("Node ");
+		buf.append(currentNode.name_);
+		buf.append(" [Node]");
+	}
+
+
+	/**
+	 * Write a HTML representation of #receiver on the given #buf.
+	 * <p>
+	 * <strong>Precondition:</strong> isInitialized();
+	 * </p>
+	 * 
+	 * @param network TODO
+	 * @param buf
+	 *            TODO
+	 */
+	public void printHTMLOn(Network network, StringBuffer buf) {
+		assert network.isInitialized();
+		
+		buf.append("<HTML>\n<HEAD>\n<TITLE>LAN Simulation</TITLE>\n</HEAD>\n<BODY>\n<H1>LAN SIMULATION</H1>");
+		Node currentNode = this;
+		buf.append("\n\n<UL>");
+		do {
+			buf.append("\n\t<LI> ");
+			currentNode.appendElement(buf, currentNode);
+			buf.append(" </LI>");
+			currentNode = currentNode.nextNode_;
+		} while (currentNode != this);
+		buf.append("\n\t<LI>...</LI>\n</UL>\n\n</BODY>\n</HTML>\n");
 	}
 
 	public Node getNext() {
@@ -113,5 +145,38 @@ Construct a <em>Node</em> with given #type and #name, and which is linked to #ne
 		
 		this.type_ = NodeType.createNodeType(type);
 	}
+
+	/**
+	 * Write an XML representation of #receiver on the given #buf.
+	 * <p>
+	 * <strong>Precondition:</strong> isInitialized();
+	 * </p>
+	 * 
+	 * @param network TODO
+	 * @param buf
+	 *            TODO
+	 */
+	public void printXMLOn(Network network, StringBuffer buf) {
+		assert network.isInitialized();
+		
+		Node currentNode = this;
+		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<network>");
+		do {
+			buf.append("\n\t");
+			currentNode.appendElementXML(buf, currentNode);
+			currentNode = currentNode.nextNode_;
+		} while (currentNode != this);
+		buf.append("\n</network>");
+	}
+
+	protected void appendElementXML(StringBuffer buf, Node currentNode) {
+		buf.append("<node>");
+		buf.append(currentNode.name_);
+		buf.append("</node>");
+	}
+
+	
+
+	
 
 }

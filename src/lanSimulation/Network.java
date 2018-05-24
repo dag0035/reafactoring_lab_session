@@ -78,10 +78,10 @@ public class Network {
 	public static Network DefaultExample() {
 		Network network = new Network(2);
 
-		Node wsFilip = new Node(NodeType.WORKSTATION, "Filip");
+		Node wsFilip = new Workstation(NodeType.WORKSTATION, "Filip");
 		Node n1 = new Node(NodeType.NODE, "n1");
-		Node wsHans = new Node(NodeType.WORKSTATION, "Hans");
-		Node prAndy = new Node(NodeType.PRINTER, "Andy");
+		Node wsHans = new Workstation(NodeType.WORKSTATION, "Hans");
+		Node prAndy = new Printer(NodeType.PRINTER, "Andy");
 
 		wsFilip.nextNode_ = n1;
 		n1.nextNode_ = wsHans;
@@ -293,7 +293,7 @@ public class Network {
 		currentNode = send(report, broadcast, currentNode, packet);
 		
 		if (packet.atDestination(currentNode)) {
-			result = printDocument(packet, currentNode, report);
+			result = packet.printDocument(this, currentNode, report);
 		} else {
 			try {
 				report.write(">>> Destinition not found, print job cancelled.\n\n");
@@ -316,145 +316,8 @@ public class Network {
 	public String toString() {
 		assert isInitialized();
 		StringBuffer buf = new StringBuffer(30 * workstations_.size());
-		printOn(firstNode_, buf);
+		firstNode_.printOn(this, buf);
 		return buf.toString();
-	}
-
-	/**
-	 * Write a printable representation of #receiver on the given #buf.
-	 * <p>
-	 * <strong>Precondition:</strong> isInitialized();
-	 * </p>
-	 * 
-	 * @param node
-	 *            TODO
-	 * @param buf
-	 *            TODO
-	 */
-	public void printOn(Node node, StringBuffer buf) {
-		assert isInitialized();
-		Node currentNode = node;
-		do {
-			currentNode.appendCase(buf);
-			buf.append(" -> ");
-			currentNode = currentNode.getNext();
-		} while (currentNode != node);
-		buf.append(" ... ");
-	}
-
-	/**
-	 * Write a HTML representation of #receiver on the given #buf.
-	 * <p>
-	 * <strong>Precondition:</strong> isInitialized();
-	 * </p>
-	 * 
-	 * @param node
-	 *            TODO
-	 * @param buf
-	 *            TODO
-	 */
-	public void printHTMLOn(Node node, StringBuffer buf) {
-		assert isInitialized();
-
-		buf.append("<HTML>\n<HEAD>\n<TITLE>LAN Simulation</TITLE>\n</HEAD>\n<BODY>\n<H1>LAN SIMULATION</H1>");
-		Node currentNode = node;
-		buf.append("\n\n<UL>");
-		do {
-			buf.append("\n\t<LI> ");
-			currentNode.appendCase(buf);
-			buf.append(" </LI>");
-			currentNode = currentNode.getNext();
-		} while (currentNode != node);
-		buf.append("\n\t<LI>...</LI>\n</UL>\n\n</BODY>\n</HTML>\n");
-	}
-
-	/**
-	 * Write an XML representation of #receiver on the given #buf.
-	 * <p>
-	 * <strong>Precondition:</strong> isInitialized();
-	 * </p>
-	 * 
-	 * @param node
-	 *            TODO
-	 * @param buf
-	 *            TODO
-	 */
-	public void printXMLOn(Node node, StringBuffer buf) {
-		assert isInitialized();
-
-		Node currentNode = node;
-		buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<network>");
-		do {
-			buf.append("\n\t");
-			switch (currentNode.getType_()) {
-			case NodeType.NODE:
-				buf.append("<node>");
-				buf.append(currentNode.name_);
-				buf.append("</node>");
-				break;
-			case NodeType.WORKSTATION:
-				buf.append("<workstation>");
-				buf.append(currentNode.name_);
-				buf.append("</workstation>");
-				break;
-			case NodeType.PRINTER:
-				buf.append("<printer>");
-				buf.append(currentNode.name_);
-				buf.append("</printer>");
-				break;
-			default:
-				buf.append("<unknown></unknown>");
-				;
-				break;
-			}
-			;
-			currentNode = currentNode.getNext();
-		} while (currentNode != node);
-		buf.append("\n</network>");
-	}
-
-	public boolean printDocument (Packet packet, Node node, Writer report) {
-		String author = "Unknown";
-		String title = "Untitled";
-		int startPos = 0, endPos = 0;
-	
-		if (node.getType_() == NodeType.PRINTER) {
-			try {
-				if (packet.message_.startsWith("!PS")) {
-					startPos = packet.message_.indexOf("author:");
-					if (startPos >= 0) {
-						endPos = packet.message_.indexOf(".", startPos + 7);
-						if (endPos < 0) {endPos = packet.message_.length();};
-						author = packet.message_.substring(startPos + 7, endPos);};
-						startPos = packet.message_.indexOf("title:");
-						if (startPos >= 0) {
-							endPos = packet.message_.indexOf(".", startPos + 6);
-							if (endPos < 0) {endPos = packet.message_.length();};
-							title = packet.message_.substring(startPos + 6, endPos);};
-							firstNode_.logging(report, author, title);
-							report.write(">>> Postscript job delivered.\n\n");
-							report.flush();
-				} else {
-					title = "ASCII DOCUMENT";
-					if (packet.message_.length() >= 16) {
-						author = packet.message_.substring(8, 16);};
-						firstNode_.logging(report, author, title);
-						report.write(">>> ASCII Print job delivered.\n\n");
-						report.flush();
-				};
-			} catch (IOException exc) {
-				// just ignore
-			};
-			return true;
-		} else {
-			try {
-				report.write(">>> Destinition is not a printer, print job cancelled.\n\n");
-				report.flush();
-			} catch (IOException exc) {
-				// just ignore
-			};
-			return false;
-		}
 	}
 
 }

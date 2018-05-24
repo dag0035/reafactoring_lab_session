@@ -260,11 +260,11 @@ public class LANTests extends TestCase {
 
 		try {
 			buf.append("---------------------------------ASCII------------------------------------------\n");
-			network.printOn(network.firstNode_, buf);
+			network.firstNode_.printOn(network, buf);
 			buf.append("\n\n---------------------------------HTML------------------------------------------\n");
-			network.printHTMLOn(network.firstNode_, buf);
+			network.firstNode_.printHTMLOn(network, buf);
 			buf.append("\n\n---------------------------------XML------------------------------------------\n");
-			network.printXMLOn(network.firstNode_, buf);
+			network.firstNode_.printXMLOn(network, buf);
 			generateOutput.write(buf.toString());
 			report.write("\n\n---------------------------------SCENARIO: Print Success --------------------------\n");
 			network.requestWorkstationPrintsDocument("Filip", "Hello World", "Andy", report);
